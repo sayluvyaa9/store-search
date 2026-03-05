@@ -117,6 +117,25 @@ input, select {
   font-size: 13px;
   color: rgba(0,0,0,0.5);
 }
+
+  .store-detail{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height 0.35s ease;
+}
+
+.store-detail.open{
+  max-height:400px;
+}
+
+.store-detail-box{
+  background:white;
+  padding:18px;
+  margin-bottom:14px;
+  border-radius:18px;
+  box-shadow:0 6px 18px rgba(0,0,0,0.06);
+}
+  
 </style>
 </head>
 
@@ -142,7 +161,6 @@ input, select {
 </div>
 
 <div id="storeList" style="margin-top:20px;"></div>
-<div id="storeDetail"></div>
 
 </div>
 
@@ -232,7 +250,7 @@ function filterStores() {
   }
 
   listDiv.innerHTML = filtered.map(store => `
-    <div class="store-item" onclick="showDetail('${store.Idvmarket}')">
+    <div class="store-item" onclick="showDetail.call(this,'${store.Idvmarket}')">
       <strong>${store.name}</strong>
       ${(parseInt(store.admin_level) || 0) > 0
         ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
@@ -242,26 +260,59 @@ function filterStores() {
 }
 
 function showDetail(id) {
+
   const store = stores.find(s => s.Idvmarket === id);
   if (!store) return;
 
-  const services = store.service
-    ? store.service.split(",").map(s =>
-        `<span class="service-tag">${s.trim()}</span>`
-      ).join("")
-    : "ไม่มีข้อมูล";
+  const item = event.currentTarget;
 
-  document.getElementById("storeDetail").innerHTML = `
-    <h3>${store.name}
-      ${(parseInt(store.admin_level) || 0) > 0
-        ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
-        : ''}
-    </h3>
-    <p><strong>รหัสร้าน:</strong> ${store.Idvmarket}</p>
-    <p><strong>บริการ:</strong><br>${services}</p>
-    <p><strong>บัญชีธนาคาร:</strong> ${store.bank_account || "-"}</p>
-    <p><a href="${store.facebook}" target="_blank">ไปยัง Facebook ร้าน</a></p>
-  `;
+  let detail = item.nextElementSibling;
+
+  if (!detail || !detail.classList.contains("store-detail")) {
+
+    const services = store.service
+      ? store.service.split(",").map(s =>
+          `<span class="service-tag">${s.trim()}</span>`
+        ).join("")
+      : "ไม่มีข้อมูล";
+
+    detail = document.createElement("div");
+    detail.className = "store-detail";
+
+    detail.innerHTML = `
+      <div class="store-detail-box">
+
+        <h3>${store.name}
+        ${(parseInt(store.admin_level) || 0) > 0
+          ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
+          : ''}
+        </h3>
+
+        <p><strong>รหัสร้าน:</strong> ${store.Idvmarket}</p>
+
+        <p><strong>บริการ:</strong><br>${services}</p>
+
+        <p><strong>บัญชีธนาคาร:</strong> ${store.bank_account || "-"}</p>
+
+        <p>
+          <a href="${store.facebook}" target="_blank">
+          ไปยัง Facebook ร้าน
+          </a>
+        </p>
+
+      </div>
+    `;
+
+    item.after(detail);
+  }
+
+  document.querySelectorAll(".store-detail").forEach(el=>{
+    if(el !== detail){
+      el.classList.remove("open");
+    }
+  });
+
+  detail.classList.toggle("open");
 }
 
 document.getElementById("serviceFilter").addEventListener("change", filterStores);
