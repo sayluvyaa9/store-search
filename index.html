@@ -153,6 +153,14 @@ input:focus, select:focus {
   margin-top: -40px;
 }
 
+  .watermark {
+  text-align: center;
+  padding: 30px 10px;
+  font-size: 13px;
+  color: rgba(0,0,0,0.5);
+  letter-spacing: 1px;
+}
+  
 </style>
 </head>
 
@@ -184,7 +192,11 @@ input:focus, select:focus {
 <div id="storeDetail"></div>
 
 </div>
-
+  
+<footer class="watermark">
+  © <span id="year"></span> HNTG House of Nightingale
+</footer>
+  
 <script>
 
 let stores = [];
@@ -275,7 +287,9 @@ function showDetail(id) {
 document.getElementById("serviceFilter").addEventListener("change", filterStores);
 document.getElementById("searchBox").addEventListener("input", filterStores);
 
+document.getElementById("year").textContent = new Date().getFullYear();
+  
 </script>
-
+  
 </body>
 </html>
