@@ -125,7 +125,7 @@ input, select {
 }
 
 .store-detail.open{
-  max-height:400px;
+  max-height:1000px;
 }
 
 .store-detail-box{
@@ -204,10 +204,7 @@ function filterStores() {
   const selectedService = document.getElementById("serviceFilter").value;
   const searchText = document.getElementById("searchBox").value.toLowerCase();
   const listDiv = document.getElementById("storeList");
-  const detailDiv = document.getElementById("storeDetail");
-
-  detailDiv.innerHTML = "";
-
+  
   let filtered = stores;
 
   if (selectedService) {
@@ -249,25 +246,23 @@ function filterStores() {
     return;
   }
 
-  listDiv.innerHTML = filtered.map(store => `
-    <div class="store-item" onclick="showDetail.call(this,'${store.Idvmarket}')">
-      <strong>${store.name}</strong>
-      ${(parseInt(store.admin_level) || 0) > 0
-        ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
-        : ''}
-    </div>
-  `).join("");
+ listDiv.innerHTML = filtered.map(store => `
+  <div class="store-item" onclick="showDetail(this,'${store.Idvmarket}')">
+    <strong>${store.name}</strong>
+    ${(parseInt(store.admin_level) || 0) > 0
+      ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
+      : ''}
+  </div>
+`).join("");
 }
 
-function showDetail(id) {
+function showDetail(item, id) {
 
   const store = stores.find(s => s.Idvmarket === id);
   if (!store) return;
 
-  const item = event.currentTarget;
-
   let detail = item.nextElementSibling;
-
+  
   if (!detail || !detail.classList.contains("store-detail")) {
 
     const services = store.service
