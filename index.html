@@ -225,8 +225,9 @@ function filterStores() {
       const services = store.service.split(",").map(s => s.trim());
 
       if (selectedService === "กลางไอดีเกม") {
-        return services.includes(selectedService) && store.is_admin === "TRUE";
-      }
+  return services.includes(selectedService) &&
+         (parseInt(store.admin_level) || 0) > 0;
+}
 
       return services.includes(selectedService);
     });
@@ -264,9 +265,9 @@ filtered.sort((a, b) => {
   listDiv.innerHTML = filtered.map(store => `
     <div class="store-item" onclick="showDetail('${store.Idvmarket}')">
       <strong>${store.name}</strong>
-      ${store.is_admin === "TRUE" 
-        ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>' 
-        : ''}
+     ${(parseInt(store.admin_level) || 0) > 0
+  ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
+  : ''}
     </div>
   `).join("");
 }
@@ -283,9 +284,9 @@ function showDetail(id) {
 
   document.getElementById("storeDetail").innerHTML = `
     <h3>${store.name}
-      ${store.is_admin === "TRUE" 
-        ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>' 
-        : ''}
+      ${(parseInt(store.admin_level) || 0) > 0
+  ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
+  : ''}
     </h3>
     <p><strong>รหัสร้าน:</strong> ${store.Idvmarket}</p>
     <p><strong>บริการ:</strong><br>${services}</p>
