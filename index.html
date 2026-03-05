@@ -59,10 +59,17 @@ function filterStores() {
 
   // กรองตามบริการ
   if (selectedService) {
-    filtered = filtered.filter(store =>
-      (store.service || "").includes(selectedService)
-    );
-  }
+  filtered = filtered.filter(store => {
+    if (!store.service) return false;
+
+    // แยก service ด้วย comma
+    const services = store.service
+      .split(",")
+      .map(s => s.trim()); // ตัดช่องว่าง
+
+    return services.includes(selectedService);
+  });
+}
 
   // กรองตามชื่อร้าน หรือ Idvmarket
   if (searchText) {
