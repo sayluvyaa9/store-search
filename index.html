@@ -125,10 +125,12 @@ input, select {
   transition:max-height 0.35s ease;
 }
 
-.store-detail.open{
-  max-height:1000px;
+.store-detail{
+  overflow:hidden;
+  max-height:0;
+  transition:max-height 0.35s ease;
 }
-
+  
 .store-detail-box{
   background:white;
   padding:18px;
@@ -303,12 +305,21 @@ function showDetail(item, id) {
   }
 
   document.querySelectorAll(".store-detail").forEach(el=>{
-    if(el !== detail){
-      el.classList.remove("open");
-    }
-  });
+  if(el !== detail){
+    el.style.maxHeight = null;
+  }
+});
 
-  detail.classList.toggle("open");
+if (detail.style.maxHeight) {
+  detail.style.maxHeight = null;
+} else {
+  detail.style.maxHeight = detail.scrollHeight + "px";
+}
+
+ item.scrollIntoView({
+  behavior: "smooth",
+  block: "center"
+});
 }
 
 document.getElementById("serviceFilter").addEventListener("change", filterStores);
