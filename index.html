@@ -166,7 +166,7 @@ async function loadData(){
 
 try{
 
-const querySnapshot = await getDocs(collection(db,"stores"));
+const querySnapshot = await getDocs(collection(db,"store"));
 
 stores = querySnapshot.docs.map(doc => ({
 id: doc.id,
