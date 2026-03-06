@@ -119,16 +119,10 @@ input, select {
   color: rgba(0,0,0,0.5);
 }
 
-  .store-detail{
-  overflow:hidden;
-  max-height:0;
-  transition:max-height 0.35s ease;
-}
-
 .store-detail{
   overflow:hidden;
-  max-height:0;
-  transition:max-height 0.35s ease;
+  height:0;
+  transition:height .35s cubic-bezier(.4,0,.2,1);
 }
   
 .store-detail-box{
@@ -259,14 +253,14 @@ function filterStores() {
 `).join("");
 }
 
-function showDetail(item, id) {
+function showDetail(item,id){
 
   const store = stores.find(s => s.Idvmarket === id);
-  if (!store) return;
+  if(!store) return;
 
   let detail = item.nextElementSibling;
-  
-  if (!detail || !detail.classList.contains("store-detail")) {
+
+  if(!detail || !detail.classList.contains("store-detail")){
 
     const services = store.service
       ? store.service.split(",").map(s =>
@@ -281,7 +275,7 @@ function showDetail(item, id) {
       <div class="store-detail-box">
 
         <h3>${store.name}
-        ${(parseInt(store.admin_level) || 0) > 0
+        ${(parseInt(store.admin_level)||0)>0
           ? '<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
           : ''}
         </h3>
@@ -304,22 +298,23 @@ function showDetail(item, id) {
     item.after(detail);
   }
 
+  const isOpen = detail.style.height && detail.style.height !== "0px";
+
   document.querySelectorAll(".store-detail").forEach(el=>{
-  if(el !== detail){
-    el.style.maxHeight = null;
+    el.style.height = "0px";
+  });
+
+  if(!isOpen){
+    detail.style.height = detail.scrollHeight + "px";
+
+    setTimeout(()=>{
+      item.scrollIntoView({
+        behavior:"smooth",
+        block:"center"
+      });
+    },200);
   }
-});
 
-if (detail.style.maxHeight) {
-  detail.style.maxHeight = null;
-} else {
-  detail.style.maxHeight = detail.scrollHeight + "px";
-}
-
- item.scrollIntoView({
-  behavior: "smooth",
-  block: "center"
-});
 }
 
 document.getElementById("serviceFilter").addEventListener("change", filterStores);
