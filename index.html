@@ -53,6 +53,7 @@ border-radius:12px;
 border:1px solid #dde6ef;
 font-size:15px;
 background:#f9fbfd;
+box-sizing: border-box;
 }
 
 .store-item{
@@ -163,18 +164,36 @@ let stores=[];
 
 async function loadData(){
 
+try{
+
 const querySnapshot = await getDocs(collection(db,"stores"));
 
-stores=querySnapshot.docs.map(doc=>doc.data());
+stores = querySnapshot.docs.map(doc => ({
+id: doc.id,
+...doc.data()
+}));
+
+console.log("โหลดร้านจาก Firebase:",stores);
 
 createServiceOptions();
 filterStores();
+
+}catch(error){
+
+console.error("โหลดร้านไม่สำเร็จ:",error);
+
+document.getElementById("storeList").innerHTML =
+"❌ โหลดข้อมูลร้านจาก Firebase ไม่ได้";
+
+}
 
 }
 
 function createServiceOptions(){
 
 const serviceFilter=document.getElementById("serviceFilter");
+
+serviceFilter.innerHTML='<option value="">-- เลือกบริการ --</option>';
 
 const allServices=stores
 .filter(store=>store.service)
@@ -200,7 +219,7 @@ const selectedService=document.getElementById("serviceFilter").value;
 const searchText=document.getElementById("searchBox").value.toLowerCase();
 const listDiv=document.getElementById("storeList");
 
-let filtered=stores;
+let filtered=[...stores];
 
 if(selectedService){
 
@@ -247,9 +266,9 @@ return;
 
 listDiv.innerHTML=filtered.map(store=>`
 
-<div class="store-item" onclick="showDetail(this,'${store.Idvmarket}')">
+<div class="store-item" onclick="showDetail(this,'${store.Idvmarket || store.id}')">
 
-<strong>${store.name}</strong>
+<strong>${store.name || "ไม่มีชื่อร้าน"}</strong>
 
 ${(parseInt(store.admin_level)||0)>0
 ?'<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
@@ -263,7 +282,7 @@ ${(parseInt(store.admin_level)||0)>0
 
 window.showDetail=function(item,id){
 
-const store=stores.find(s=>s.Idvmarket===id);
+const store=stores.find(s=>(s.Idvmarket||s.id)===id);
 if(!store) return;
 
 let detail=item.nextElementSibling;
@@ -281,7 +300,7 @@ detail.innerHTML=`
 
 <div class="store-detail-box">
 
-<h3>${store.name}
+<h3>${store.name || "-"}
 
 ${(parseInt(store.admin_level)||0)>0
 ?'<span class="admin-badge">👑 แอดมินกลุ่ม</span>'
@@ -289,15 +308,15 @@ ${(parseInt(store.admin_level)||0)>0
 
 </h3>
 
-<p><strong>รหัสร้าน:</strong> ${store.Idvmarket}</p>
+<p><strong>รหัสร้าน:</strong> ${store.Idvmarket || store.id}</p>
 
 <p><strong>บริการ:</strong><br>${services}</p>
 
-<p><strong>บัญชีธนาคาร:</strong> ${store.bank_account||"-"}</p>
+<p><strong>บัญชีธนาคาร:</strong> ${store.bank_account || "-"}</p>
 
 <p>
 
-<a href="${store.facebook}" target="_blank">
+<a href="${store.facebook || '#'}" target="_blank">
 
 ไปยัง Facebook ร้าน
 
